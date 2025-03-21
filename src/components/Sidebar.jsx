@@ -1,56 +1,57 @@
 import { FaChartLine, FaVideo, FaMagic, FaBrush, FaBars } from "react-icons/fa";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";  // Import for navigation
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true); // Sidebar starts open
+  const [isOpen, setIsOpen] = useState(true);
+  const navigate = useNavigate();  // Initialize navigate function
 
   return (
     <>
-      {/* Hamburger Icon - Now positioned properly */}
+      {/* Sidebar Toggle Button */}
       <button
-        className="fixed top-4 left-4 z-50 text-white p-2 bg-gray-800 rounded-md hover:bg-gray-700 transition"
+        className="fixed top-4 left-4 z-50 text-white p-2 bg-gray-800/80 rounded-md hover:bg-gray-700 transition"
         onClick={() => setIsOpen(!isOpen)}
       >
         <FaBars size={22} />
       </button>
 
-      {/* Sidebar - Adjusted to not overlap navbar */}
+      {/* Sidebar Panel */}
       <aside
-        className={`h-[calc(100vh-4rem)] w-64 bg-gradient-to-br from-[#2A0E61] via-[#4E2A84] to-[#F8461C] text-white shadow-lg fixed left-0 top-16 z-40 transition-transform duration-300 ${
+        className={`h-[calc(100vh-4rem)] w-64 bg-black/40 backdrop-blur-lg border-r border-gray-700 shadow-lg fixed left-0 top-16 z-40 transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-64"
         }`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/20">
-          <h2 className="text-lg font-semibold">Dashboard</h2>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-white hover:text-yellow-300"
-          >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-white">Dashboard</h2>
+          <button onClick={() => setIsOpen(false)} className="text-white hover:text-blue-400">
             ✖
           </button>
         </div>
 
         {/* Sidebar Links */}
         <nav className="mt-4">
-          <ul className="space-y-4">
-            <li className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 rounded-md transition-all duration-300">
-              <FaChartLine /> Business Analytics
-            </li>
-            <li className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 rounded-md transition-all duration-300">
-              <FaVideo /> Create a Video
-            </li>
-            <li className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 rounded-md transition-all duration-300">
-              <FaMagic /> Generate Captions
-            </li>
-            <li className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 rounded-md transition-all duration-300">
-              <FaBrush /> Your Brand
-            </li>
+          <ul className="space-y-2">
+            <SidebarItem Icon={FaChartLine} text="Business Analytics" onClick={() => navigate("/")} />
+            <SidebarItem Icon={FaVideo} text="Create a Video" onClick={() => navigate("/create-video")} />
+            <SidebarItem Icon={FaMagic} text="Generate Captions" />
+            <SidebarItem Icon={FaBrush} text="Your Brand" />
           </ul>
         </nav>
       </aside>
     </>
   );
 };
+
+const SidebarItem = ({ Icon, text, onClick }) => (
+  <li
+    className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 hover:text-blue-400 rounded-md transition-all duration-300 cursor-pointer"
+    onClick={onClick}
+  >
+    <Icon />
+    {text}
+  </li>
+);
 
 export default Sidebar;
