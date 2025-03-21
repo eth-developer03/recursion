@@ -89,9 +89,7 @@ class OpenAIService:
             # Use the new transcribe method
             transcript = openai.Audio.transcribe("whisper-1", audio_file)
         print("✅ Transcription completed!")
-        # transcript is usually a dict with a "text" key, so return transcript["text"]
         return transcript["text"] if isinstance(transcript, dict) else transcript
-
 
     def encode_image(self, image_path: str) -> str:
         """
@@ -135,6 +133,22 @@ class OpenAIService:
         )
         return response.choices[0].message.content
 
+    def generate_caption(self, transcript: str, image_descriptions: str) -> str:
+        """
+        Generates an engaging caption for the reel based on the video transcript and image descriptions.
+        """
+        response = openai.ChatCompletion.create(
+            model="gpt-4-turbo",
+            messages=[
+                {"role": "system", "content": "You are an AI that creates engaging and creative captions for social media reels."},
+                {"role": "user", "content": f"Video Transcript: {transcript}"},
+                {"role": "user", "content": f"Image Descriptions: {image_descriptions}"},
+                {"role": "user", "content": "Based on this, generate a captivating caption for a social media reel."}
+            ],
+            max_tokens=100
+        )
+        return response.choices[0].message.content
+
 # -------------------------------
 # VideoHashtagGenerator: Orchestrates the video processing and OpenAI services
 # -------------------------------
@@ -146,15 +160,16 @@ class VideoHashtagGenerator:
     def process_video(self):
         """
         Processes the video by extracting audio, transcribing it, extracting frames, analyzing images,
-        and finally generating trending hashtags.
-        Returns the transcript, image descriptions, and generated hashtags.
+        and finally generating trending hashtags and a caption.
+        Returns the transcript, image descriptions, generated hashtags, and caption.
         """
         self.video_processor.extract_audio()
         transcript = self.openai_service.transcribe_audio(self.video_processor.audio_path)
         frames = self.video_processor.extract_frames()
         image_descriptions = self.openai_service.analyze_images(frames)
         hashtags = self.openai_service.generate_hashtags(transcript, image_descriptions)
-        return transcript, image_descriptions, hashtags
+        caption = self.openai_service.generate_caption(transcript, image_descriptions)
+        return transcript, image_descriptions, hashtags, caption
 
 # -------------------------------
 # Example usage
@@ -165,6 +180,7 @@ if __name__ == "__main__":
     frames_folder = "frames/"
 
     generator = VideoHashtagGenerator(video_path, audio_path, frames_folder)
-    transcript, image_descriptions, hashtags = generator.process_video()
+    transcript, image_descriptions, hashtags, caption = generator.process_video()
 
     print("\n🎯 Generated Hashtags:\n", hashtags)
+    print("\n📝 Generated Caption:\n", caption)
