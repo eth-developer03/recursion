@@ -1,0 +1,24 @@
+[
+    {
+      "id": 1,
+      "title": "My First Reel",
+      "thumbnail": "https://source.unsplash.com/400x300/?nature",
+      "views": "12K",
+      "likes": "1.2K"
+    },
+    {
+      "id": 2,
+      "title": "Marketing Trends 2025",
+      "thumbnail": "https://source.unsplash.com/400x300/?business",
+      "views": "8.5K",
+      "likes": "980"
+    },
+    {
+      "id": 3,
+      "title": "How to Get More Engagement?",
+      "thumbnail": "https://source.unsplash.com/400x300/?socialmedia",
+      "views": "15K",
+      "likes": "2K"
+    }
+  ]
+  
