@@ -12,16 +12,15 @@ const VideoUpload = () => {
   };
 
   return (
-    <div 
-      className="relative bg-white/10 backdrop-blur-lg p-8 rounded-xl shadow-xl transition-all duration-300 border border-white/20"
-    >
-      <h2 className="text-3xl font-bold mb-4 flex items-center gap-2 text-white">
-        📂 Upload Your Video
+    <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-white/10 shadow-lg w-[350px] h-[250px] border border-white/20 backdrop-blur-md">
+      {/* Title */}
+      <h2 className="text-white font-bold text-xl flex items-center gap-2 mb-4">
+        📁 Upload Your Video
       </h2>
 
-      <label className="border-2 border-dashed border-white/30 rounded-lg p-10 text-center cursor-pointer hover:bg-white/10 transition-all duration-300 shadow-md hover:shadow-lg">
+      <label className="border-2 border-dashed border-yellow-400 rounded-lg p-10 text-center cursor-pointer hover:bg-yellow-400/10 transition-all duration-300 shadow-md hover:shadow-lg">
         <input type="file" accept="video/*" className="hidden" onChange={handleFileChange} />
-        <FaCloudUploadAlt size={50} className="text-white mb-2 animate-bounce" />
+        <FaCloudUploadAlt size={50} className="text-yellow-400 mb-2 animate-bounce" />
         <p className="text-white">Click to upload or drag & drop</p>
       </label>
 

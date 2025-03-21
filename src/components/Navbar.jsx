@@ -1,32 +1,22 @@
-import { FaUserCircle, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FaCog, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-800 px-6 py-4 flex justify-between items-center shadow-md">
-      <h1 className="text-xl font-bold flex items-center gap-2">
-        👋 Hi, Aryan
+    <nav className="flex justify-between items-center px-6 py-4 bg-white/10 backdrop-blur-lg shadow-md border-b border-white/20">
+      {/* Branding */}
+      <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+        🚀 <span className="text-yellow-400">ContentFlow</span>
       </h1>
 
-      {/* Navbar Icons */}
+      {/* Right Actions */}
       <div className="flex items-center gap-6">
-        {/* Rotating Settings Icon on Hover */}
-        <motion.button
-          whileHover={{ rotate: 360 }}
-          transition={{ duration: 0.6 }}
-          className="text-gray-300 hover:text-blue-400"
-        >
+        <button className="hover:text-yellow-400 transition-colors duration-300">
           <FaCog size={22} />
-        </motion.button>
-
-        {/* Logout */}
-        <button className="text-gray-300 hover:text-red-400 flex items-center">
-          <FaSignOutAlt size={20} className="mr-1" />
-          Logout
         </button>
-
-        {/* User Profile */}
-        <FaUserCircle size={26} className="text-gray-300 cursor-pointer hover:text-blue-400" />
+        <button className="hover:text-yellow-400 transition-colors duration-300">
+          <FaSignOutAlt size={22} />
+        </button>
+        <FaUserCircle size={28} className="text-white/80" />
       </div>
     </nav>
   );
