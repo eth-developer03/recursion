@@ -1,4 +1,3 @@
-
 import asyncio
 import datetime
 import os
@@ -13,12 +12,135 @@ from openai import OpenAIError
 # Import our video generation module
 import video
 from dotenv import load_dotenv
+# Import our crop module
+from crop import video_router as crop_router
+# Import our hashtag module
+# from hashtag import VideoHashtagGenerator
+# Import our thumbnail module 
+from thumbnail import ViralityThumbnailAgent
+
+# Create FastAPI routers for the new modules
+from fastapi import APIRouter, File, UploadFile, Form
+import shutil
+import os
+from hashtag import hashtag_router
+from thumbnail import thumbnail_router
+# Create hashtag router
+hashtag_router = APIRouter()
+
+@hashtag_router.post("/generate")
+async def generate_hashtags(
+    video: UploadFile = File(...),
+    frame_interval: int = Form(5)
+):
+    """
+    Generate trending hashtags and captions for a video.
+    """
+    # Save the uploaded video to a temporary file
+    temp_video_path = f"temp_video_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.mp4"
+    with open(temp_video_path, "wb") as buffer:
+        shutil.copyfileobj(video.file, buffer)
+    
+    try:
+        # Set up paths for processing
+        audio_path = f"temp_audio_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.mp3"
+        frames_folder = f"temp_frames_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}/"
+        
+        # Process the video
+        generator = VideoHashtagGenerator(temp_video_path, audio_path, frames_folder, frame_interval)
+        transcript, image_descriptions, hashtags, caption = generator.process_video()
+        
+        # Clean up temporary files
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+        if os.path.exists(frames_folder):
+            shutil.rmtree(frames_folder)
+        
+        return {
+            "transcript": transcript,
+            "image_descriptions": image_descriptions,
+            "hashtags": hashtags,
+            "caption": caption
+        }
+    except Exception as e:
+        # Clean up on error
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+        if os.path.exists(audio_path):
+            os.remove(audio_path)
+        if os.path.exists(frames_folder):
+            shutil.rmtree(frames_folder)
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Create thumbnail router
+thumbnail_router = APIRouter()
+hashtag_router = APIRouter()
+
+
+@thumbnail_router.post("/generate")
+async def generate_thumbnail(
+    video: UploadFile = File(...),
+    selection_string: str = Form(None),
+    num_frames: int = Form(20)
+):
+    """
+    Generate viral thumbnails for a video and select the best one.
+    """
+    # Save the uploaded video to a temporary file
+    temp_video_path = f"temp_video_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.mp4"
+    with open(temp_video_path, "wb") as buffer:
+        shutil.copyfileobj(video.file, buffer)
+    
+    try:
+        # Set up output directory
+        output_dir = f"thumbnails_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Create inputs for thumbnail agent
+        inputs = {
+            "video_path": temp_video_path,
+            "output_dir": output_dir,
+            "num_frames": num_frames,
+            "num_thumbnails": 5,
+            "selection_string": selection_string
+        }
+        
+        # Process the video
+        agent = ViralityThumbnailAgent(device="cpu")
+        result = agent.process(inputs)
+        
+        # Extract paths for response
+        all_thumbnails = [os.path.basename(path) for path in result["all_thumbnail_paths"]]
+        best_thumbnail = os.path.basename(result["best_thumbnail"])
+        
+        return {
+            "output_directory": output_dir,
+            "all_thumbnails": all_thumbnails,
+            "best_thumbnail": best_thumbnail
+        }
+    except Exception as e:
+        # Clean up on error
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+        raise HTTPException(status_code=500, detail=str(e))
+
 load_dotenv()  
 app = FastAPI(
     title="Trending Content Video Script Generator",
     description="API for generating video scripts from trending Reddit posts and news articles",
     version="1.0.0"
 )
+
+# Include the routers
+app.include_router(crop_router, prefix="/crop", tags=["video-conversion"])
+app.include_router(hashtag_router, prefix="/hashtag", tags=["video-hashtags"])
+app.include_router(thumbnail_router, prefix="/thumbnail", tags=["video-thumbnails"])
+
+
+
 
 # Model definitions
 class APICredentials(BaseModel):
@@ -128,7 +250,10 @@ async def root():
         "endpoints": [
             "/generate-script (POST): Generate a video script from trending content",
             "/job/{job_id} (GET): Check the status of a script generation job",
-            "/health (GET): Check API health"
+            "/health (GET): Check API health",
+            "/crop/convert (POST): Convert a video to vertical format",
+            "/hashtag/generate (POST): Generate hashtags and captions for a video",
+            "/thumbnail/generate (POST): Generate viral thumbnails for a video"
         ]
     }
 
@@ -223,4 +348,3 @@ if __name__ == "__main__":
     
     # Run FastAPI with uvicorn
     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
-
