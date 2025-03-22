@@ -8,14 +8,7 @@ const Navbar = () => {
         🚀 <span className="text-gray-200">ContentFlow</span>
       </h1>
 
-      {/* Centered Navigation */}
-      <ul className="hidden md:flex space-x-6 text-gray-300 text-sm font-medium">
-        <li className="hover:text-white transition-all cursor-pointer">Overview</li>
-        <li className="hover:text-white transition-all cursor-pointer">Features</li>
-        <li className="hover:text-white transition-all cursor-pointer">Roadmap</li>
-        <li className="hover:text-white transition-all cursor-pointer">FAQ</li>
-        <li className="hover:text-white transition-all cursor-pointer">About</li>
-      </ul>
+
 
       {/* User Controls */}
       <div className="flex items-center gap-6 text-gray-300">

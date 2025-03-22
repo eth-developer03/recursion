@@ -1,10 +1,12 @@
 import { FaChartLine, FaVideo, FaMagic, FaBrush, FaBars } from "react-icons/fa";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";  // Import for navigation
+import { useNavigate, useLocation } from "react-router-dom";  // ✅ Import navigation and location
+import { motion } from "framer-motion";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const navigate = useNavigate();  // Initialize navigate function
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <>
@@ -33,10 +35,45 @@ const Sidebar = () => {
         {/* Sidebar Links */}
         <nav className="mt-4">
           <ul className="space-y-2">
-            <SidebarItem Icon={FaChartLine} text="Business Analytics" onClick={() => navigate("/")} />
-            <SidebarItem Icon={FaVideo} text="Create a Video" onClick={() => navigate("/create-video")} />
-            <SidebarItem Icon={FaMagic} text="Generate Captions" />
-            <SidebarItem Icon={FaBrush} text="Your Brand" />
+            <SidebarItem 
+              Icon={FaChartLine} 
+              text="Home" 
+              path="/dashboard" 
+              navigate={navigate} 
+              isActive={location.pathname === "/dashboard"} 
+            />
+            <SidebarItem 
+              Icon={FaVideo} 
+              text="Create a Video" 
+              path="/create-video" 
+              navigate={navigate} 
+              isActive={location.pathname === "/create-video"} 
+            />
+            <SidebarItem 
+              Icon={FaMagic} 
+              text="Generate Thumbnail" 
+              path="/generate-thumbnail" 
+              navigate={navigate} 
+              isActive={location.pathname === "/generate-thumbnail"} 
+            />
+            <SidebarItem 
+              Icon={FaBrush} 
+              text="Caption" 
+              path="/your-caption" 
+              navigate={navigate} 
+              isActive={location.pathname === "/your-caption"} 
+            />
+
+<SidebarItem 
+              Icon={FaBrush} 
+
+              text="Calendar" 
+              path="/calendar" 
+              navigate={navigate} 
+              isActive={location.pathname === "/calendar"} 
+            />
+
+
           </ul>
         </nav>
       </aside>
@@ -44,14 +81,23 @@ const Sidebar = () => {
   );
 };
 
-const SidebarItem = ({ Icon, text, onClick }) => (
-  <li
-    className="px-6 py-3 flex items-center gap-3 hover:bg-white/10 hover:text-blue-400 rounded-md transition-all duration-300 cursor-pointer"
-    onClick={onClick}
+// ✅ Improved SidebarItem Component with Path, Active State & Animations
+const SidebarItem = ({ Icon, text, path, navigate, isActive }) => (
+  <motion.li
+    className={`px-6 py-3 flex items-center gap-3 rounded-md transition-all duration-300 cursor-pointer relative group
+      ${isActive ? "bg-blue-500 text-white" : "hover:bg-white/10 hover:text-blue-400"}`}
+    onClick={() => navigate(path)}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
   >
     <Icon />
-    {text}
-  </li>
+    <span>{text}</span>
+
+    {/* ✅ Tooltip */}
+    <span className="absolute left-full ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black text-white text-xs rounded px-2 py-1 shadow-lg">
+      {text}
+    </span>
+  </motion.li>
 );
 
 export default Sidebar;

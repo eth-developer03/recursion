@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Logs
 logs
 *.log
@@ -112,4 +112,6 @@ whisper_output
 clipper_output
 input_files/*
 !input_files/PLACE_CLIPS_HERE
->>>>>>> 13824f3b63351f58279ac02bf7870d639daa04e0
+
+.env
+
